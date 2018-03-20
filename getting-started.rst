@@ -28,6 +28,9 @@ This post assumes that you already have a functional Mercurial setup configured 
 Microcommits and Multi-Head
 ---------------------------
 
+.. TODO switch to phabricator many-small-commits doc?  https://secure.phabricator.com/book/phabflavor/article/writing_reviewable_code/#many-small-commits
+.. FIXME Does the "everything in a small commit" workflow still work for phabricator?
+
 We recommend reading the `How to Structure Commits <http://mozilla-version-control-tools.readthedocs.io/en/latest/mozreview/commits.html#how-to-structure-commits>`_ documentation.
 
 It is recommend to author more, smaller commits than fewer, larger commits.  This practice is sometimes referred to as *microcommits*. In general, a commit should be as small as possible but no smaller.  Here are some guidelines:
@@ -63,6 +66,8 @@ Let's start working on a new bug.
   M pylib/mozreview/mozreview/extension.py
 
 * You need to commit the changes
+
+.. FIXME remove this
 
   * You have to specify the Bug number in the first line of the commit message
   * You should also set my reviewers here, using "r?name", specifying their IRC nickname (you can comma separate multiple reviewers)
@@ -316,3 +321,48 @@ Unlike the previous aliases, this is a *shell alias*, and should be added to the
             hg --color always export -r $rev | less -R
         done
     }
+
+
+########
+New Work
+########
+
+::
+
+    $ hg wipshort
+
+    # hack hack
+
+    $ hg status
+    $ hg commit
+
+    # Link to well-formatted commit messages
+    # Mention convention of putting component first in subject
+
+    $ hg status
+
+    # Add tests
+
+    $ hg wipshort
+
+    # Oops, found a problem
+
+    $ hg checkout 4816
+
+    $ hg wipshort
+
+    $ hg amend / hg commit --amend
+
+    $ hg wipshort
+
+    $ hg rebase / hg evolve
+
+    $ hg wipshort
+
+    # Request the review
+
+    $ hg pull --update --rebase
+
+    $ arc diff
+
+    # Note the needed bug #, reviewers
