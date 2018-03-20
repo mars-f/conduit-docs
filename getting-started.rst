@@ -327,6 +327,185 @@ Unlike the previous aliases, this is a *shell alias*, and should be added to the
 New Work
 ########
 
+git: one branch, one revision, multiple commits
+git: stacked branches, stacked revisions
+hg: one bookmark, one revision, multiple commits
+hg: stacked bookmarks, stacked revisions
+hg: one bookmark, multiple revisions, one commit per revision
+
+Story 1: hg with one bookmark, multiple commits, one revision
+-------------------------------------------------------------------
+
+::
+
+    $ hg wipshort
+
+    $ hg bookmark easy-fix
+
+    # hack hack
+
+    $ hg status
+    $ hg commit
+
+    # Link to well-formatted commit messages
+    # Mention convention of putting component first in subject
+
+    $ hg status
+
+    # Add tests
+
+    $ hg wipshort
+
+    # Oops, found a problem
+
+    # hack hack
+
+    $ hg commit
+
+    $ hg wipshort
+
+    # Request the review
+
+    $ hg pull --update --rebase
+
+    $ arc diff
+
+    # Note the needed bug #, reviewers
+
+    # Addressing feedback
+
+    $ hg wipshort
+
+    # hack hack
+    # checkbox in UI
+
+    $ hg commit -m 'fix lint'
+
+    # hack hack
+    # checkbox in UI
+
+    $ hg commit -m 'fix complex problem foo'
+
+    $ arc diff
+
+    # ^ should "just work"
+
+    # TODO landing changes
+
+    $ hg pull --update --rebase
+
+    $ arc land
+
+    # FIXME ^ should that use lando instead?  maybe keep command for branches not in mozilla-central.
+
+
+Story 2: hg with multiple bookmarks and stacked branches
+--------------------------------------------------------
+
+
+::
+
+    $ hg wipshort
+
+    $ hg bookmark complex-fix-part-1
+
+    # hack hack
+
+    $ hg status
+    $ hg commit
+
+    # Link to well-formatted commit messages
+    # Mention convention of putting component first in subject
+
+    $ hg status
+
+    $ hg bookmark complex-fix-part-2
+
+    # Add tests
+
+    $ hg commit
+
+    $ hg wipshort
+
+    # Oops, found a problem
+
+    $ hg checkout 4816
+
+    $ hg wipshort
+
+    # hack hack
+
+    $ hg amend / hg commit --amend
+
+    $ hg wipshort
+
+    $ hg evolve (maybe hg rebase)
+
+    # Request the review
+
+    $ hg wipshort
+    $ arc feature
+
+    $ hg bookmark complex-fix-part-1 / arc feature complex-fix-part-1
+
+    $ hg pull --update --rebase
+
+    # FIXME ^^^ check these commands, is this how we evolve a bookmark stack?
+
+    $ arc diff @
+
+    # Note the needed bug #, reviewers
+
+    $ hg bookmark complex-fix-part-2 / arc feature complex-fix-part-2
+
+    # Note that the user needs to specify the diff target or it will default to @ for stacked bookmarks
+    $ arc diff complex-fix-part-1
+
+    # Might want to note the user can run $ arc diff --browse complex-diff-part-1
+    # Might want to mention tab completion
+
+    # Set stack relation
+
+    # Addressing feedback
+
+    $ hg wipshort
+    $ arc feature
+
+    $ hg bookmark complex-fix-part-1 / arc feature complex-fix-part-1
+
+    # hack hack
+
+    $ hg commit -m 'fix but in function()'
+
+    $ arc diff
+
+    $ hg wipshort
+    $ arc feature
+
+    $ hg evolve
+
+    $ hg wipshort
+    $ arc feature
+
+    # Note that the commit<->revision link is gone.  Maybe?  Does it store the link by bookmark or by commit?
+
+    $ arc diff --update D9999 complex-feature-part-1
+
+    # Landing changes
+
+    $ arc feature
+    $ arc feature complex-fix-part-1
+    $ hg pull --update --rebase
+    $ arc land
+
+    $ hg evolve (maybe)
+    $ arc feature
+    $ arc land
+
+
+Story blah
+----------
+
 ::
 
     $ hg wipshort
@@ -363,6 +542,6 @@ New Work
 
     $ hg pull --update --rebase
 
-    $ arc diff
+    $ arc diff ????
 
     # Note the needed bug #, reviewers
