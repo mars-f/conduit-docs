@@ -357,42 +357,59 @@ Fixing the code
 ::
 
     $ hg wipshort
-    @  0 tip Initial commit
+    @  5865 tip @ autoland: configure lando s3 bucket (bug 1448051).
+    o  5864 hgmo: upgrade ZooKeeper to 3.4.11 (bug 1434339) r=sheehan
+    o  5863 autoland: configure lando pingback url (bug 1445567) (fixup)
+    o  5862 autoland: configure lando pingback url (bug 1445567)
 
-    $ hg bookmark easy-fix
+    $ hg bookmark fix-docstring
 
-    $ echo 'hack hack' > first.txt
+    $ vim pylib/mozautomation/mozautomation/commitparser.py
 
     $ hg status
-    M first.txt
+    M pylib/mozautomation/mozautomation/commitparser.py
 
-    $ hg commit -m "first: add some trivial but helpful text"
+    $ hg commit
 
-    # Link to well-formatted commit messages
-    # https://chris.beams.io/posts/git-commit/#why-not-how
-    # Mention convention of putting component first in subject
-    # FIXME do we still need to mention "no merge commits?" from http://mozilla-version-control-tools.readthedocs.io/en/latest/mozreview/commits.html#how-to-structure-commits
+Make sure our docstring is well-formatted.
+.. TODO Link to well-formatted commit messages
+.. TODO https://chris.beams.io/posts/git-commit/#why-not-how
+.. TODO Mention convention of putting component first in subject
+.. FIXME do we still need to mention "no merge commits?" from http://mozilla-version-control-tools.readthedocs.io/en/latest/mozreview/commits.html#how-to-structure-commits
 
-    # Add tests
+::
+
+    mozautomation: fix pep8 lint
+
+    Fix some PEP 8 lint in the module level docstrings.
+
+Oops, we found a second file.  We can add a fix-up commit to the bookmark that adds the new changes.
+
+::
+
+    $ vim pylib/mozautomation/mozautomation/treestatus.py
+
+    $ hg commit -m 'docstring for the treestatus module'
 
     $ hg wipshort
-    @  1 tip easy-fix first: add some trivial but helpful text
-    o  0 Initial commit
 
-    # Oops, found a problem
+    @  5871 tip fix-docstring docstring for the treestatus module
+    o  5870 mozautomation: fix pep8 lint
+    o  5865 @ autoland: configure lando s3 bucket (bug 1448051).
+    o  5864 hgmo: upgrade ZooKeeper to 3.4.11 (bug 1434339) r=sheehan
+    o  5863 autoland: configure lando pingback url (bug 1445567) (fixup)
+    |
 
-    $ hg commit -m "first: emphasize our hack"
 
-    $ hg wipshort
-    @  2 tip easy-fix first: emphasize our hack
-    o  1 first: add some trivial but helpful text
-    o  0 Initial commit
+Before we request a review we should check for changes upstream.
 
-    # Request the review
+::
 
     $ hg pull --update --rebase
 
-    # FIXME is --rebase the right command when using evolve?
+.. FIXME is --rebase the right command when using evolve?
+
+::
 
     $ arc diff
 
