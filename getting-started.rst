@@ -9,8 +9,13 @@
 
     :todo:`TODO items look like this.`
 
+##############
+Original guide
+##############
+
+************
 Introduction
-============
+************
 
 Mercurial Setup
 ---------------
@@ -327,6 +332,16 @@ Unlike the previous aliases, this is a *shell alias*, and should be added to the
 New Work
 ########
 
+************
+Introduction
+************
+
+TODO
+
+***************
+Getting Started
+***************
+
 git: one branch, one revision, multiple commits
 git: stacked branches, stacked revisions
 hg: one bookmark, one revision, multiple commits
@@ -334,45 +349,90 @@ hg: stacked bookmarks, stacked revisions
 hg: one bookmark, multiple revisions, one commit per revision
 
 Story 1: hg with one bookmark, multiple commits, one revision
--------------------------------------------------------------------
+=============================================================
+
+Fixing the code
+---------------
 
 ::
 
     $ hg wipshort
+    @  0 tip Initial commit
 
     $ hg bookmark easy-fix
 
-    # hack hack
+    $ echo 'hack hack' > first.txt
 
     $ hg status
-    $ hg commit
+    M first.txt
+
+    $ hg commit -m "first: add some trivial but helpful text"
 
     # Link to well-formatted commit messages
+    # https://chris.beams.io/posts/git-commit/#why-not-how
     # Mention convention of putting component first in subject
-
-    $ hg status
+    # FIXME do we still need to mention "no merge commits?" from http://mozilla-version-control-tools.readthedocs.io/en/latest/mozreview/commits.html#how-to-structure-commits
 
     # Add tests
 
     $ hg wipshort
+    @  1 tip easy-fix first: add some trivial but helpful text
+    o  0 Initial commit
 
     # Oops, found a problem
 
-    # hack hack
-
-    $ hg commit
+    $ hg commit -m "first: emphasize our hack"
 
     $ hg wipshort
+    @  2 tip easy-fix first: emphasize our hack
+    o  1 first: add some trivial but helpful text
+    o  0 Initial commit
 
     # Request the review
 
     $ hg pull --update --rebase
 
+    # FIXME is --rebase the right command when using evolve?
+
     $ arc diff
 
-    # Note the needed bug #, reviewers
+    first: add some trivial but helpful text
 
-    # Addressing feedback
+    Summary:
+
+    The project really needs more mentions of the word hacking, so let's add
+    some!
+
+    Test Plan: grep -i hack *
+
+    Reviewers: glob, imadueme
+
+    Subscribers:
+
+    Bug #: 5556555
+
+    # NEW DIFFERENTIAL REVISION
+    # Describe the changes in this new revision.
+    #
+    # Included commits in branch default:
+    #
+    #         153ddf055585 first: emphasize our hack
+    #         c7ab40d66585 first: add some trivial but helpful text
+    #
+    # arc could not identify any existing revision in your working copy.
+    # If you intended to update an existing revision, use:
+    #
+    #   $ arc diff --update <revision>
+
+
+    # Note the needed bug #, reviewers
+    # FIXME do people need to use the 'r?' syntax in commit messages?  Does it hurt to include?
+
+
+Addressing feedback
+-------------------
+
+::
 
     $ hg wipshort
 
@@ -390,7 +450,10 @@ Story 1: hg with one bookmark, multiple commits, one revision
 
     # ^ should "just work"
 
-    # TODO landing changes
+Landing the changes
+-------------------
+
+::
 
     $ hg pull --update --rebase
 
@@ -400,36 +463,55 @@ Story 1: hg with one bookmark, multiple commits, one revision
 
 
 Story 2: hg with multiple bookmarks and stacked branches
---------------------------------------------------------
+========================================================
 
+Let's make a complex fix that would be easier to review if it were split into two parts.
+
+Fixing the code
+---------------
+
+First we'll submit part 1 for review.
 
 ::
 
     $ hg wipshort
-
-    $ hg bookmark complex-fix-part-1
+    $ hg bookmark add-stub-endpoint
 
     # hack hack
 
-    $ hg status
-    $ hg commit
+    $ hg commit -m 'add a stub for the new API endpoint'
 
-    # Link to well-formatted commit messages
-    # Mention convention of putting component first in subject
+    $ arc diff
 
-    $ hg status
+Stacking the second change
+--------------------------
 
-    $ hg bookmark complex-fix-part-2
+Now let's add a second change that builds on the first.
 
-    # Add tests
 
-    $ hg commit
+::
+
+    $ hg bookmark add-endpoint-logic
+
+    # hack hack
+
+    $ hg commit -m 'add core logic for new API endpoint'
 
     $ hg wipshort
 
+    # Note that the user needs to specify the diff target or it will default to @ for stacked bookmarks
+    $ arc diff add-stub-endpoint
+
+Making changes to the bottom of the stack
+-----------------------------------------
+
+Rebase onto master, review feedback, bugfixes
+
+::
+
     # Oops, found a problem
 
-    $ hg checkout 4816
+    $ hg checkout add-stub-endpoint
 
     $ hg wipshort
 
@@ -441,14 +523,8 @@ Story 2: hg with multiple bookmarks and stacked branches
 
     $ hg evolve (maybe hg rebase)
 
-    # Request the review
-
     $ hg wipshort
     $ arc feature
-
-    $ hg bookmark complex-fix-part-1 / arc feature complex-fix-part-1
-
-    $ hg pull --update --rebase
 
     # FIXME ^^^ check these commands, is this how we evolve a bookmark stack?
 
@@ -456,22 +532,27 @@ Story 2: hg with multiple bookmarks and stacked branches
 
     # Note the needed bug #, reviewers
 
-    $ hg bookmark complex-fix-part-2 / arc feature complex-fix-part-2
+    $ hg bookmark add-endpoint-logic / arc feature add-endpoint-logic
 
     # Note that the user needs to specify the diff target or it will default to @ for stacked bookmarks
-    $ arc diff complex-fix-part-1
+    $ arc diff add-stub-endpoint
 
     # Might want to note the user can run $ arc diff --browse complex-diff-part-1
     # Might want to mention tab completion
 
     # Set stack relation
 
-    # Addressing feedback
+Addressing feedback
+-------------------
+
+The reviewer came back with some changes!
+
+::
 
     $ hg wipshort
     $ arc feature
 
-    $ hg bookmark complex-fix-part-1 / arc feature complex-fix-part-1
+    $ hg bookmark add-stub-endpoint / arc feature add-stub-endpoint
 
     # hack hack
 
@@ -491,57 +572,4 @@ Story 2: hg with multiple bookmarks and stacked branches
 
     $ arc diff --update D9999 complex-feature-part-1
 
-    # Landing changes
 
-    $ arc feature
-    $ arc feature complex-fix-part-1
-    $ hg pull --update --rebase
-    $ arc land
-
-    $ hg evolve (maybe)
-    $ arc feature
-    $ arc land
-
-
-Story blah
-----------
-
-::
-
-    $ hg wipshort
-
-    # hack hack
-
-    $ hg status
-    $ hg commit
-
-    # Link to well-formatted commit messages
-    # Mention convention of putting component first in subject
-
-    $ hg status
-
-    # Add tests
-
-    $ hg wipshort
-
-    # Oops, found a problem
-
-    $ hg checkout 4816
-
-    $ hg wipshort
-
-    $ hg amend / hg commit --amend
-
-    $ hg wipshort
-
-    $ hg rebase / hg evolve
-
-    $ hg wipshort
-
-    # Request the review
-
-    $ hg pull --update --rebase
-
-    $ arc diff ????
-
-    # Note the needed bug #, reviewers
