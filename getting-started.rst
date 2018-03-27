@@ -80,13 +80,13 @@ Let's start working on a new bug.
 ::
 
   $ hg commit
-  mozreview: Fix that broken thing (Bug 123456) r?smacleod
+  mozreview: Fix that broken thing
 
   There was a thing that was broken, because we assumed apples, but there were
   actually oranges.  Switch over to oranges.
 
   $ hg wipshort
-  @  4816 tip mozreview: Fix that broken thing (Bug 123456) r?smacleod
+  @  4816 tip mozreview: Fix that broken thing
   o  4815 @ Bug 1309644 - Adding Kyle Machulis to WebIDL DOM Peer Hook; r=ted
   |
   ~
@@ -98,13 +98,13 @@ Let's start working on a new bug.
   $ hg status
   M hgext/reviewboard/tests/test-push.t
   $ hg commit
-  mozreview: Add test for apples/oranges (Bug 123456) r?smacleod
+  mozreview: mozreview: Add test for apples/oranges
 
   Ensure we use oranges instead of apples when doing that thing.
 
   $ hg wipshort
-  @  4817 tip mozreview: Add test for apples/oranges (Bug 123456) r?smacleod
-  o  4816 mozreview: Fix that broken thing (Bug 123456) r?smacleod
+  @  4817 tip mozreview: mozreview: Add test for apples/oranges
+  o  4816 mozreview: Fix that broken thing
   o  4815 @ Bug 1309644 - Adding Kyle Machulis to WebIDL DOM Peer Hook; r=ted
   |
   ~
@@ -121,16 +121,16 @@ Oops, while working on the tests I found an issue with a change, let's fix that.
 ::
 
   $ hg wipshort
-  @  4817 tip mozreview: Add test for apples/oranges (Bug 123456) r?smacleod
-  o  4816 mozreview: Fix that broken thing (Bug 123456) r?smacleod
+  @  4817 tip mozreview: mozreview: Add test for apples/oranges
+  o  4816 mozreview: Fix that broken thing
   o  4815 @ Bug 1309644 - Adding Kyle Machulis to WebIDL DOM Peer Hook; r=ted
   |
   ~
   $ hg co 4816
   1 files updated, 0 files merged, 0 files removed, 0 files unresolved
   $ hg wipshort
-  o  4817 tip mozreview: Add test for apples/oranges (Bug 123456) r?smacleod
-  @  4816 mozreview: Fix that broken thing (Bug 123456) r?smacleod
+  o  4817 tip mozreview: mozreview: Add test for apples/oranges
+  @  4816 mozreview: Fix that broken thing
   o  4815 @ Bug 1309644 - Adding Kyle Machulis to WebIDL DOM Peer Hook; r=ted
   |
   ~
@@ -152,9 +152,9 @@ Oops, while working on the tests I found an issue with a change, let's fix that.
 ::
 
   $ hg wipshort
-  @  4819 tip mozreview: Fix that broken thing (Bug 123456) r?smacleod
-  | o  4817 mozreview: Add test for apples/oranges (Bug 123456) r?smacleod
-  | x  4816 mozreview: Fix that broken thing (Bug 123456) r?smacleod
+  @  4819 tip mozreview: Fix that broken thing
+  | o  4817 mozreview: mozreview: Add test for apples/oranges
+  | x  4816 mozreview: Fix that broken thing
   |/
   o  4815 @ Bug 1309644 - Adding Kyle Machulis to WebIDL DOM Peer Hook; r=ted
   |
@@ -165,10 +165,10 @@ Oops, while working on the tests I found an issue with a change, let's fix that.
 ::
 
   $ hg rebase -s 4817 -d 4819
-  rebasing 4817:32d34909fb2f "mozreview: Add test for apples/oranges (Bug 123456) r?smacleod"
+  rebasing 4817:32d34909fb2f "mozreview: mozreview: Add test for apples/oranges"
   $ hg wipshort
-  o  4820 tip mozreview: Add test for apples/oranges (Bug 123456) r?smacleod
-  @  4819 mozreview: Fix that broken thing (Bug 123456) r?smacleod
+  o  4820 tip mozreview: mozreview: Add test for apples/oranges
+  @  4819 mozreview: Fix that broken thing
   o  4815 @ Bug 1309644 - Adding Kyle Machulis to WebIDL DOM Peer Hook; r=ted
   |
   ~
@@ -245,89 +245,6 @@ You need the evolve extension: https://www.mercurial-scm.org/wiki/EvolveExtensio
 
 This extension allows for correct editing of history.  Make sure you add it to your user ``.hgrc`` file (ie. ``~/.hgrc``), not the hgrc file within the cloned repository.  Running ``hg config -e`` will open the correct file in your editor.
 
-Aliases
--------
-
-I have a few Mercurial tweaks that make my life slightly easier.  Most of these require editing your user ``.hgrc`` file with ``hg config -e``.
-
-autoreview repo
-^^^^^^^^^^^^^^^
-
-There is a special repository called the ``autoreview`` repository that will automatically see what you are pushing and redirect your push to the appropriate code review repository.  See `Configuring The Auto Review Repository <http://mozilla-version-control-tools.readthedocs.io/en/latest/mozreview/install-mercurial.html#configuring-the-auto-review-repository>`_ for installation instructions.
-
-wipshort
-^^^^^^^^
-
-An alternative to Mozilla's `wip` alias, which uses more concise and colourised output.
-
-::
-
-    [alias]
-    wipshort = log --graph --rev=wip --template=wipshort
-
-    [templates]
-    wipshort = '{label(ifeq(graphnode,"x","custom.rev_obsolete",ifeq(phase,"draft","custom.rev_draft","custom.rev_public")),rev)}{label("custom.tags", if(tags," {tags}"))}{label("custom.bookmarks", if(bookmarks," {bookmarks}"))} {label(ifcontains(rev, revset("parents()"), "custom.here"), desc|firstline)}'
-
-    [color]
-    custom.bookmarks = magenta
-    custom.here = red
-    custom.rev_draft = green
-    custom.rev_obsolete = none
-    custom.rev_public = blue
-    custom.tags = yellow
-
-    [experimental]
-    graphshorten = true
-
-.. image:: wip-wipshort.png
-
-This document uses ``wipshort`` in its output, however due to limitations of ReST colour cannot be used.
-
-:todo:`either talk with gps about getting this added to mach, or don't mention it in the official docs. going to push for inclusion and i find it much nicer than mozilla's "wip" alias`
-
-ls
-^^
-
-:todo:`probably going to remove this from this document`
-
-Lists files modified by the current revisions.
-
-::
-
-    [alias]
-    ls = !if [[ \"$1\" == \"\" ]]; then $HG log_files_draft | sort -u ; else $HG log_files -r "$@" | sort -u; fi
-    log_files = log --template '{join(files,"\n")}\n'
-    log_files_draft = log --template '{join(files,"\n")}\n' -r 'children(last(public()))::.'
-
-grab
-^^^^
-
-:todo:`probably going to remove this from this document`
-
-Simple alias for rebasing.  Note this overrides the ``grab`` alias defined by the ``evolve`` extension (``evolve``'s ``grab`` picks up a single revision, while this version grabs the revision and all children).
-
-::
-
-    [alias]
-    grab = !$HG rebase --dest . --source $@ && $HG up tip
-
-hg-outgoing
-^^^^^^^^^^^
-
-:todo:`probably going to remove this from this document`
-
-Unlike the previous aliases, this is a *shell alias*, and should be added to the appropriate shell startup file (eg. ``~/.bash_aliases``).
-
-::
-
-    function hg-outgoing {
-        local rev
-        for rev in $(hg log -r 'children(last(public()))::.' --template '{rev}\n'); do
-            hg --color always export -r $rev | less -R
-        done
-    }
-
-
 ########
 New Work
 ########
@@ -354,15 +271,163 @@ Story 1: hg with one bookmark, multiple commits, one revision
 Fixing the code
 ---------------
 
+Let's start with a clean checkout.
+
 ::
 
-    $ hg wipshort
-    @  5865 tip @ autoland: configure lando s3 bucket (bug 1448051).
-    o  5864 hgmo: upgrade ZooKeeper to 3.4.11 (bug 1434339) r=sheehan
-    o  5863 autoland: configure lando pingback url (bug 1445567) (fixup)
-    o  5862 autoland: configure lando pingback url (bug 1445567)
+  $ hg wipshort
+  @  5865 tip @ autoland: configure lando s3 bucket (bug 1448051).
+  |
+  ~
 
-    $ hg bookmark fix-docstring
+  $ hg bookmark fix-docstring
+  $ vim pylib/mozautomation/mozautomation/commitparser.py
+  $ hg status
+  M pylib/mozautomation/mozautomation/commitparser.py
+
+Make sure our commit message is well-formatted.
+
+  * `Here is how to write a good commit message <https://chris.beams.io/posts/git-commit/#why-not-how>`_
+  * We do not need a bug number or "r?" reviewers list [FIXME check this]
+  * The component name is not needed for Firefox [FIXME check this]
+
+::
+
+  $ hg commit
+  mozautomation: fix pep8 lint
+
+  Fix some PEP 8 lint in the module level docstrings.
+
+Oops, we found a second file to update.  We can add a fix-up commit to the bookmark that adds the new changes.
+
+::
+
+  $ vim pylib/mozautomation/mozautomation/treestatus.py
+  $ hg commit -m 'docstring for the treestatus module'
+  $ hg wipshort
+
+  @  5871 tip fix-docstring docstring for the treestatus module
+  o  5870 mozautomation: fix pep8 lint
+  o  5865 @ autoland: configure lando s3 bucket (bug 1448051).
+  o  5864 hgmo: upgrade ZooKeeper to 3.4.11 (bug 1434339) r=sheehan
+  o  5863 autoland: configure lando pingback url (bug 1445567) (fixup)
+  |
+
+
+Requesting a Review
+-------------------
+
+Before we request a review we should check for changes upstream.
+
+::
+
+  $ hg pull --rebase
+
+* If you want to look before you leap in with ``arc diff`` or ``arc land``, you can run ``arc which`` to get a description of what ``arc`` is going to do next.
+
+We need to include:
+
+* An real BMO Bug #
+* Reviewers
+* A Test Plan, even if it is just the string 'n/a'
+
+::
+
+  $ arc diff
+  mozautomation: fix pep8 lint
+
+  Summary:
+
+  Fix some PEP 8 lint in the module level docstrings.
+
+  Test Plan: $ pep8 thefiles
+
+  Reviewers: glob, imadueme
+
+  Subscribers:
+
+  Bug #: 5556555
+
+  # NEW DIFFERENTIAL REVISION
+  # Describe the changes in this new revision.
+  #
+  # Included commits in branch default:
+  #
+  #         153ddf055585 docstring for the treestatus module
+  #         c7ab40d66585 mozautomation: fix pep8 lint
+  #
+  # arc could not identify any existing revision in your working copy.
+  # If you intended to update an existing revision, use:
+  #
+  #   $ arc diff --update <revision>
+
+
+Addressing feedback
+-------------------
+
+Our reviewers came back with some changes.  Let's add some fix-up commits for the work.
+
+::
+
+  $ hg checkout fix-docstring
+  $ vim pylib/mozautomation/mozautomation/treestatus.py
+  $ hg commit -m 'fix lint'
+
+Phabricator has a neat trick where you can check the 'Done' button in the review at the same time as fixing the commit.  The next time you put your changes up for review with ``arc diff``, Phabricator will automagically submit your 'Done' items and bundle them into a nice summary.
+
+.. TODO Screenshot of Done item
+
+::
+
+  $ arc diff
+
+Landing the changes
+-------------------
+
+.. FIXME Lando?
+
+Everything looks good, let's land our changes in mainline.
+
+::
+
+  $ hg checkout fix-docstring
+
+We'll check that there are no conflicting changes upstream.
+
+::
+
+  $ hg pull --rebase
+
+``arc land`` is going to squash our bookmark into a single commit before adding the changes to mainline. The Phabricator review fields will become the commit message.
+
+.. TODO checking for "\bwip\b" in the commit message would make a good lint extension to 'arc land'
+
+**NOTE** Make sure you remove any "WIP not ready yet" stuff from the review summary before running ``arc land``!
+
+* If you want to check what commit message ``arc land`` is going to use, you can run ``arc amend`` to update your local changeset's commit message to match Phabricator.
+
+::
+
+  $ arc land
+
+.. FIXME ^ should that use lando instead?  maybe keep command for branches not in mozilla-central.
+
+
+Story 2: hg with one commit per review
+======================================
+
+Telling arc to make one review per changeset
+--------------------------------------------
+
+First we need to tell the ``arc diff`` command to only submit the current changeset for review.
+
+::
+
+    $ arc set-config base 'arc:this, arc:prompt'
+
+Everything for pushing up a single commit change is the same as if we used a bookmark.
+
+::
 
     $ vim pylib/mozautomation/mozautomation/commitparser.py
 
@@ -371,222 +436,192 @@ Fixing the code
 
     $ hg commit
 
-Make sure our docstring is well-formatted.
-.. TODO Link to well-formatted commit messages
-.. TODO https://chris.beams.io/posts/git-commit/#why-not-how
-.. TODO Mention convention of putting component first in subject
-.. FIXME do we still need to mention "no merge commits?" from http://mozilla-version-control-tools.readthedocs.io/en/latest/mozreview/commits.html#how-to-structure-commits
+    $ hg pull --rebase
+
+    $ arc diff
+
+When it's time to address feedback we use ``hg amend``.
+
+  * ``hg commit --amend`` also works, and allows you to update the commit description while amending the commit
 
 ::
-
-    mozautomation: fix pep8 lint
-
-    Fix some PEP 8 lint in the module level docstrings.
-
-Oops, we found a second file.  We can add a fix-up commit to the bookmark that adds the new changes.
-
-::
-
-    $ vim pylib/mozautomation/mozautomation/treestatus.py
-
-    $ hg commit -m 'docstring for the treestatus module'
 
     $ hg wipshort
-
-    @  5871 tip fix-docstring docstring for the treestatus module
-    o  5870 mozautomation: fix pep8 lint
-    o  5865 @ autoland: configure lando s3 bucket (bug 1448051).
+    o  5870 tip mozautomation: fix pep8 lint
+    @  5865 @ autoland: configure lando s3 bucket (bug 1448051).
     o  5864 hgmo: upgrade ZooKeeper to 3.4.11 (bug 1434339) r=sheehan
     o  5863 autoland: configure lando pingback url (bug 1445567) (fixup)
     |
 
+    $ hg checkout tip
 
-Before we request a review we should check for changes upstream.
+    $ vim pylib/mozautomation/mozautomation/commitparser.py
 
-::
-
-    $ hg pull --update --rebase
-
-.. FIXME is --rebase the right command when using evolve?
-
-::
+    $ hg amend
 
     $ arc diff
 
-    first: add some trivial but helpful text
-
-    Summary:
-
-    The project really needs more mentions of the word hacking, so let's add
-    some!
-
-    Test Plan: grep -i hack *
-
-    Reviewers: glob, imadueme
-
-    Subscribers:
-
-    Bug #: 5556555
-
-    # NEW DIFFERENTIAL REVISION
-    # Describe the changes in this new revision.
-    #
-    # Included commits in branch default:
-    #
-    #         153ddf055585 first: emphasize our hack
-    #         c7ab40d66585 first: add some trivial but helpful text
-    #
-    # arc could not identify any existing revision in your working copy.
-    # If you intended to update an existing revision, use:
-    #
-    #   $ arc diff --update <revision>
-
-
-    # Note the needed bug #, reviewers
-    # FIXME do people need to use the 'r?' syntax in commit messages?  Does it hurt to include?
-
-
-Addressing feedback
--------------------
-
-::
-
-    $ hg wipshort
-
-    # hack hack
-    # checkbox in UI
-
-    $ hg commit -m 'fix lint'
-
-    # hack hack
-    # checkbox in UI
-
-    $ hg commit -m 'fix complex problem foo'
-
-    $ arc diff
-
-    # ^ should "just work"
-
-Landing the changes
--------------------
-
-::
-
-    $ hg pull --update --rebase
-
-    $ arc land
-
-    # FIXME ^ should that use lando instead?  maybe keep command for branches not in mozilla-central.
-
-
-Story 2: hg with multiple bookmarks and stacked branches
-========================================================
+Story 3: hg with stacked branches
+=================================
 
 Let's make a complex fix that would be easier to review if it were split into two parts.
+
+We'll use the "One changeset per review" workflow.
+
+.. FIXME do we still need to mention "no merge commits?" from http://mozilla-version-control-tools.readthedocs.io/en/latest/mozreview/commits.html#how-to-structure-commits
+
+
+Telling arc to make one review per changeset
+--------------------------------------------
+
+If you haven't done so already, we need to tell the ``arc diff`` command to only submit the current changeset for review.
+
+::
+
+    $ arc set-config base 'arc:this, arc:prompt'
 
 Fixing the code
 ---------------
 
-First we'll submit part 1 for review.
+First we'll submit part 1 for review.  Start with a clean branch.
 
 ::
 
-    $ hg wipshort
-    $ hg bookmark add-stub-endpoint
+  $ hg wipshort
+  @  4815 tip @ Bug 1309644 - Adding Kyle Machulis to WebIDL DOM Peer Hook; r=ted
+  |
+  ~
 
-    # hack hack
-
-    $ hg commit -m 'add a stub for the new API endpoint'
-
-    $ arc diff
-
-Stacking the second change
---------------------------
-
-Now let's add a second change that builds on the first.
-
+* After updating the files:
 
 ::
 
-    $ hg bookmark add-endpoint-logic
+  $ hg status
+  M pylib/mozreview/mozreview/extension.py
 
-    # hack hack
-
-    $ hg commit -m 'add core logic for new API endpoint'
-
-    $ hg wipshort
-
-    # Note that the user needs to specify the diff target or it will default to @ for stacked bookmarks
-    $ arc diff add-stub-endpoint
-
-Making changes to the bottom of the stack
------------------------------------------
-
-Rebase onto master, review feedback, bugfixes
+* You need to commit the changes
 
 ::
 
-    # Oops, found a problem
+  $ hg commit
+  mozreview: Fix that broken thing
 
-    $ hg checkout add-stub-endpoint
+  There was a thing that was broken, because we assumed apples, but there were
+  actually oranges.  Switch over to oranges.
 
-    $ hg wipshort
+  $ hg wipshort
+  @  4816 tip mozreview: Fix that broken thing
+  o  4815 @ Bug 1309644 - Adding Kyle Machulis to WebIDL DOM Peer Hook; r=ted
+  |
+  ~
 
-    # hack hack
+* And then in another commit let's add a test case:
 
-    $ hg amend / hg commit --amend
+::
 
-    $ hg wipshort
+  $ hg status
+  M hgext/reviewboard/tests/test-push.t
+  $ hg commit
+  mozreview: Add test for apples/oranges
 
-    $ hg evolve (maybe hg rebase)
+  Ensure we use oranges instead of apples when doing that thing.
 
-    $ hg wipshort
-    $ arc feature
+  $ hg wipshort
+  @  4817 tip mozreview: mozreview: Add test for apples/oranges
+  o  4816 mozreview: Fix that broken thing
+  o  4815 @ Bug 1309644 - Adding Kyle Machulis to WebIDL DOM Peer Hook; r=ted
+  |
+  ~
 
-    # FIXME ^^^ check these commands, is this how we evolve a bookmark stack?
+.. _updating-commits:
 
-    $ arc diff @
+Updating Commits
+----------------
 
-    # Note the needed bug #, reviewers
+Oops, while working on the tests I found an issue with a change, let's fix that.
 
-    $ hg bookmark add-endpoint-logic / arc feature add-endpoint-logic
+* First, `checkout` the revision that needs to be updated
 
-    # Note that the user needs to specify the diff target or it will default to @ for stacked bookmarks
-    $ arc diff add-stub-endpoint
+::
 
-    # Might want to note the user can run $ arc diff --browse complex-diff-part-1
-    # Might want to mention tab completion
+  $ hg wipshort
+  @  4817 tip mozreview: mozreview: Add test for apples/oranges
+  o  4816 mozreview: Fix that broken thing
+  o  4815 @ Bug 1309644 - Adding Kyle Machulis to WebIDL DOM Peer Hook; r=ted
+  |
+  ~
+  $ hg co 4816
+  1 files updated, 0 files merged, 0 files removed, 0 files unresolved
+  $ hg wipshort
+  o  4817 tip mozreview: mozreview: Add test for apples/oranges
+  @  4816 mozreview: Fix that broken thing
+  o  4815 @ Bug 1309644 - Adding Kyle Machulis to WebIDL DOM Peer Hook; r=ted
+  |
+  ~
 
-    # Set stack relation
+* Make the changes, and ``amend``
 
-Addressing feedback
+  * ``hg commit --amend`` also works, and allows you to update the commit description while amending the commit
+
+::
+
+  $ vi pylib/mozreview/mozreview/extension.py
+  $ hg status
+  M pylib/mozreview/mozreview/extension.py
+  $ hg amend
+  1 new unstable changesets
+
+* ``wipshort`` shows that the ``amend`` has orphaned all children of the amended revision (4817 in this example)
+
+::
+
+  $ hg wipshort
+  @  4819 tip mozreview: Fix that broken thing
+  | o  4817 mozreview: mozreview: Add test for apples/oranges
+  | x  4816 mozreview: Fix that broken thing
+  |/
+  o  4815 @ Bug 1309644 - Adding Kyle Machulis to WebIDL DOM Peer Hook; r=ted
+  |
+  ~
+
+* We need to rebase the orphans onto the updated revision
+
+::
+
+  $ hg rebase -s 4817 -d 4819
+  rebasing 4817:32d34909fb2f "mozreview: mozreview: Add test for apples/oranges"
+  $ hg wipshort
+  o  4820 tip mozreview: mozreview: Add test for apples/oranges
+  @  4819 mozreview: Fix that broken thing
+  o  4815 @ Bug 1309644 - Adding Kyle Machulis to WebIDL DOM Peer Hook; r=ted
+  |
+  ~
+  $ hg co 4820
+  1 files updated, 0 files merged, 0 files removed, 0 files unresolved
+
+* Mercurial's ``histedit`` command allows you to fancy things to commits like reordering or folding (combining).  Read more about Histedit on `the Histedit wiki page <https://www.mercurial-scm.org/wiki/HisteditExtension>`_.
+
+Requesting a Review
 -------------------
 
-The reviewer came back with some changes!
+Tests pass, and you're happy with the change; let's put it up for review in Phabricator.
+
+We need to check out each individual changeset and submit it.
 
 ::
 
-    $ hg wipshort
-    $ arc feature
+  $ hg wipshort
+  o  4820 tip mozreview: mozreview: Add test for apples/oranges
+  @  4819 mozreview: Fix that broken thing
+  o  4815 @ Bug 1309644 - Adding Kyle Machulis to WebIDL DOM Peer Hook; r=ted
+  |
+  ~
+  $ hg co 4819
+  $ arc diff
+  $ hg next
+  [4820] mozreview: Add test for apples/oranges
+  $ arc diff
 
-    $ hg bookmark add-stub-endpoint / arc feature add-stub-endpoint
+Now we can go to the Phabricator UI and set the relation between the two reviews.
 
-    # hack hack
-
-    $ hg commit -m 'fix but in function()'
-
-    $ arc diff
-
-    $ hg wipshort
-    $ arc feature
-
-    $ hg evolve
-
-    $ hg wipshort
-    $ arc feature
-
-    # Note that the commit<->revision link is gone.  Maybe?  Does it store the link by bookmark or by commit?
-
-    $ arc diff --update D9999 complex-feature-part-1
-
-
+.. TODO screenshot or link to stacking UI
