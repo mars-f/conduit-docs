@@ -1,37 +1,14 @@
-.. role:: todo
-.. raw:: html
-
-    <style>
-      .todo { color: red }
-    </style>
-
-.. NOTE::
-
-    :todo:`TODO items look like this.`
-
-##############
-Original guide
-##############
-
 ************
 Introduction
 ************
 
 Mercurial Setup
----------------
+===============
 
-This post assumes that you already have a functional Mercurial setup configured using ``mach mercurial-setup``.  Full instructions can be found in the `Configuring Your Machine to Use MozReview <http://mozilla-version-control-tools.readthedocs.io/en/latest/mozreview/install.html>`_ and `Configuring Mercurial to Use MozReview <http://mozilla-version-control-tools.readthedocs.io/en/latest/mozreview/install-mercurial.html>`_ documents.  You'll also need an active `bugzilla.mozilla.org (BMO) <https://bugzilla.mozilla.org/>`_ account.
-
-#. `Create an API-Key <https://bugzilla.mozilla.org/userprefs.cgi?tab=apikey>`_ named ``mercurial`` on BMO.
-#. Ensure `Your real name <https://bugzilla.mozilla.org/userprefs.cgi?tab=account>`_ on BMO contains your IRC nick prefixed by a colon (eg. my ``real name`` field has ``Byron Jones :glob``).
-#. If you have a Mozilla LDAP account, `associate your LDAP account with MozReview <http://mozilla-version-control-tools.readthedocs.io/en/latest/mozreview/install.html#manually-associating-your-ldap-account-with-mozreview>`_.
-#. `Install the mercurial extension <http://mozilla-version-control-tools.readthedocs.io/en/latest/mozreview/install-mercurial.html#installing-the-mercurial-extension>`_ by cloning the ``version-control-tools`` repository and adding it to your ``.hgrc`` file.
-#. `Add your BMO email address and API key <http://mozilla-version-control-tools.readthedocs.io/en/latest/mozreview/install-mercurial.html#bugzilla-credentials>`_ to the ``[bugzilla]`` section in ``.hgrc``.
-#. `Add your IRC nick <http://mozilla-version-control-tools.readthedocs.io/en/latest/mozreview/install-mercurial.html#irc-nickname>`_ to the ``[mozilla]`` section in ``.hgrc``.
-#. Install the :ref:`extensions-aliases`. Note: the `Evolve extension <https://www.mercurial-scm.org/wiki/EvolveExtension>`_ is required.
+.. TODO link to the main phab doc
 
 Microcommits and Multi-Head
----------------------------
+===========================
 
 .. TODO switch to phabricator many-small-commits doc?  https://secure.phabricator.com/book/phabflavor/article/writing_reviewable_code/#many-small-commits
 .. FIXME Does the "everything in a small commit" workflow still work for phabricator?
@@ -46,227 +23,21 @@ It is recommend to author more, smaller commits than fewer, larger commits.  Thi
 
 While some developers use bookmarks/etc to track changes, it's possible to just create a new "head", which essentially means "just start coding off tip and commit".  The ``wipshort`` alias provides a view of the repository that allows for keeping track of the work.
 
+.. TODO add wipshort alias
+
+***************
 Getting Started
-===============
+***************
 
-Updating Code
--------------
-
-Let's start working on a new bug.
-
-* ``wipshort`` shows we have a clean repository to work on
-
-::
-
-  $ hg wipshort
-  @  4815 tip @ Bug 1309644 - Adding Kyle Machulis to WebIDL DOM Peer Hook; r=ted
-  |
-  ~
-
-* After updating the files:
-
-::
-
-  $ hg status
-  M pylib/mozreview/mozreview/extension.py
-
-* You need to commit the changes
-
-.. FIXME remove this
-
-  * You have to specify the Bug number in the first line of the commit message
-  * You should also set my reviewers here, using "r?name", specifying their IRC nickname (you can comma separate multiple reviewers)
-
-::
-
-  $ hg commit
-  mozreview: Fix that broken thing
-
-  There was a thing that was broken, because we assumed apples, but there were
-  actually oranges.  Switch over to oranges.
-
-  $ hg wipshort
-  @  4816 tip mozreview: Fix that broken thing
-  o  4815 @ Bug 1309644 - Adding Kyle Machulis to WebIDL DOM Peer Hook; r=ted
-  |
-  ~
-
-* And then in another commit let's add a test case:
-
-::
-
-  $ hg status
-  M hgext/reviewboard/tests/test-push.t
-  $ hg commit
-  mozreview: mozreview: Add test for apples/oranges
-
-  Ensure we use oranges instead of apples when doing that thing.
-
-  $ hg wipshort
-  @  4817 tip mozreview: mozreview: Add test for apples/oranges
-  o  4816 mozreview: Fix that broken thing
-  o  4815 @ Bug 1309644 - Adding Kyle Machulis to WebIDL DOM Peer Hook; r=ted
-  |
-  ~
-
-.. _updating-commits:
-
-Updating Commits
-----------------
-
-Oops, while working on the tests I found an issue with a change, let's fix that.
-
-* First, `checkout` the revision that needs to be updated
-
-::
-
-  $ hg wipshort
-  @  4817 tip mozreview: mozreview: Add test for apples/oranges
-  o  4816 mozreview: Fix that broken thing
-  o  4815 @ Bug 1309644 - Adding Kyle Machulis to WebIDL DOM Peer Hook; r=ted
-  |
-  ~
-  $ hg co 4816
-  1 files updated, 0 files merged, 0 files removed, 0 files unresolved
-  $ hg wipshort
-  o  4817 tip mozreview: mozreview: Add test for apples/oranges
-  @  4816 mozreview: Fix that broken thing
-  o  4815 @ Bug 1309644 - Adding Kyle Machulis to WebIDL DOM Peer Hook; r=ted
-  |
-  ~
-
-* Make the changes, and ``amend``
-
-  * ``hg commit --amend`` also works, and allows you to update the commit description while amending the commit
-
-::
-
-  $ vi pylib/mozreview/mozreview/extension.py
-  $ hg status
-  M pylib/mozreview/mozreview/extension.py
-  $ hg amend
-  1 new unstable changesets
-
-* ``wipshort`` shows that the ``amend`` has orphaned all children of the amended revision (4817 in this example)
-
-::
-
-  $ hg wipshort
-  @  4819 tip mozreview: Fix that broken thing
-  | o  4817 mozreview: mozreview: Add test for apples/oranges
-  | x  4816 mozreview: Fix that broken thing
-  |/
-  o  4815 @ Bug 1309644 - Adding Kyle Machulis to WebIDL DOM Peer Hook; r=ted
-  |
-  ~
-
-* We need to rebase the orphans onto the updated revision
-
-::
-
-  $ hg rebase -s 4817 -d 4819
-  rebasing 4817:32d34909fb2f "mozreview: mozreview: Add test for apples/oranges"
-  $ hg wipshort
-  o  4820 tip mozreview: mozreview: Add test for apples/oranges
-  @  4819 mozreview: Fix that broken thing
-  o  4815 @ Bug 1309644 - Adding Kyle Machulis to WebIDL DOM Peer Hook; r=ted
-  |
-  ~
-  $ hg co 4820
-  1 files updated, 0 files merged, 0 files removed, 0 files unresolved
-
-* Mercurial's ``histedit`` command allows you to fancy things to commits like reordering or folding (combining).  Read more about Histedit on `the Histedit wiki page <https://www.mercurial-scm.org/wiki/HisteditExtension>`_.
-
-Requesting a Review
--------------------
-
-Tests pass, and you're happy with the change; let's push it to MozReview.
-
-* First, let's ensure we're working off the latest revision of the code :todo:`screenshot: hg pull -u; rebase`
-* I like to use my ``hg-outgoing`` shell function to read through my changes before pushing :todo:`maybe don't include this`
-
-  * This is almost the same as checking out each revision we're going to push, and running ``hg diff -c .``
-
-* Pushing it for review is simple: ``hg push review``.  Pay attention to any warnings about reviewers. :todo:`screenshot: hg push review`
-
-Working on Something Else
--------------------------
-
-Reviews can take some time, let's work on another bug.
-
-* Checkout the last public revision :todo:`screenshot: wip; hg pull -u; hg co @`
-* Then make changes and commit :todo:`find another good example bug to work on.` :todo:`screenshot: vi, commit, wip`
-
-Dealing with Review Feedback
-----------------------------
-
-The reviewer wanted some changes, let's make those and push for another review.  This is generally the same steps as :ref:`updating-commits`.
-
-* Checkout the revision we want to change :todo:`screenshot: wip; hg co`
-* Make the changes, amend, and rebase :todo:`screenshot: vi,amend, rebase`
-* To re-request a review, push again to MozReview :todo:`screenshot: hg push`
-
-  * MozReview will carry forward existing r+'s, and request new reviews from the review where required :todo:`link to docs describing rules, write if missing!`
-
-Landing with Autoland
----------------------
-
-:todo:`the rest of this document is a TODO`
-
-* requirements
-* fix-on-commit
-
-  * basically update as normal, push, then autoland
-
-* pruning landed revisions
-
-  * don't do it immediately; you can't unprune with evolve
-
-Reviewing Code
---------------
-
-* update your repo
-* ``hg pull`` from ui url
-
-  * wip screenshot
-
-* review
-* don't prune changes until bug fixed, and has stabilised
-
-  * ``abort: 00changelog.i@5e746b6fb9dd41bdc2c9ab9c49f27e68f52e0bb9: filtered node!``
-
-Mercurial Extensions and Aliases
+Style 1: One bookmark per review
 ================================
 
-Evolve
-------
+In this style we use GitHub-style fix-up commits under a single bookmark.  The fix-ups will be squashed into a single commit before landing.
 
-You need the evolve extension: https://www.mercurial-scm.org/wiki/EvolveExtension#Setup
-
-This extension allows for correct editing of history.  Make sure you add it to your user ``.hgrc`` file (ie. ``~/.hgrc``), not the hgrc file within the cloned repository.  Running ``hg config -e`` will open the correct file in your editor.
-
-########
-New Work
-########
-
-************
-Introduction
-************
-
-TODO
-
-***************
-Getting Started
-***************
-
-git: one branch, one revision, multiple commits
-git: stacked branches, stacked revisions
-hg: one bookmark, one revision, multiple commits
-hg: stacked bookmarks, stacked revisions
-hg: one bookmark, multiple revisions, one commit per revision
-
-Story 1: hg with one bookmark, multiple commits, one revision
-=============================================================
+We'll use:
+* One bookmark
+* One review per bookmark
+* Multiple fix-up commits
 
 Fixing the code
 ---------------
@@ -413,8 +184,16 @@ We'll check that there are no conflicting changes upstream.
 .. FIXME ^ should that use lando instead?  maybe keep command for branches not in mozilla-central.
 
 
-Story 2: hg with one commit per review
-======================================
+Style 2: One changeset per review
+=================================
+
+In this style we craft just one commit per review.  When we get feedback or fixups we amend our single commit.
+
+We'll use:
+* One commit
+* One review per commit
+* ``hg amend`` to add fix-ups to our commit
+
 
 Telling arc to make one review per changeset
 --------------------------------------------
@@ -424,6 +203,9 @@ First we need to tell the ``arc diff`` command to only submit the current change
 ::
 
     $ arc set-config base 'arc:this, arc:prompt'
+
+Fixing the code
+---------------
 
 Everything for pushing up a single commit change is the same as if we used a bookmark.
 
@@ -461,14 +243,25 @@ When it's time to address feedback we use ``hg amend``.
 
     $ arc diff
 
-Story 3: hg with stacked branches
-=================================
+
+Stacked changes with evolve
+===========================
+
+.. TODO link to main phabricator doc about this?
+.. TODO maybe remove the evolve extension reference.  smacleod says it's iffy to support because it's still experimental.
+
 
 Let's make a complex fix that would be easier to review if it were split into two parts.
 
 We'll use the "One changeset per review" workflow.
 
 .. FIXME do we still need to mention "no merge commits?" from http://mozilla-version-control-tools.readthedocs.io/en/latest/mozreview/commits.html#how-to-structure-commits
+
+
+Installing the Evolve extension
+-------------------------------
+
+TODO explanation of the `Evolve extension <https://www.mercurial-scm.org/wiki/EvolveExtension>`_
 
 
 Telling arc to make one review per changeset
