@@ -171,9 +171,14 @@ Telling arc to make one review per changeset
 
 First we need to tell the ``arc diff`` command to only submit the current changeset for review.
 
+Let's change the setting for just this project.
+
 ::
 
-    $ arc set-config base 'arc:this, arc:prompt'
+    $ arc set-config --local base 'arc:this, arc:prompt'
+
+* NOTE: If you want to change this setting for all projects under your login, remove the ``--local`` switch.
+
 
 Fixing the code
 ---------------
