@@ -7,37 +7,26 @@ Mercurial Setup
 
 .. TODO link to the main phab doc
 
-Microcommits and Multi-Head
-===========================
+Multi-Head vs. bookmarks
+========================
 
-.. TODO switch to phabricator many-small-commits doc?  https://secure.phabricator.com/book/phabflavor/article/writing_reviewable_code/#many-small-commits
-.. FIXME Does the "everything in a small commit" workflow still work for phabricator?
+While some developers use bookmarks/etc to track changes, it's possible to just create a new "head", which essentially means "just start coding off tip and commit".  The ``hg wip`` alias provides a view of the repository that allows for keeping track of the work.
 
-We recommend reading the `How to Structure Commits <http://mozilla-version-control-tools.readthedocs.io/en/latest/mozreview/commits.html#how-to-structure-commits>`_ documentation.
-
-It is recommend to author more, smaller commits than fewer, larger commits.  This practice is sometimes referred to as *microcommits*. In general, a commit should be as small as possible but no smaller.  Here are some guidelines:
-
-* If you need to perform some cleanup before a refactor, put the cleanup in its own commit separate from the refactor.
-* If you need to fix a typo, put that in its own commit.
-* If you need to make a wide-sweeping change such as adding an argument to a commonly-called function, update function declarations one at a time (1 per commit) or use 1 commit to introduce the new interface and another for implementing it
-
-While some developers use bookmarks/etc to track changes, it's possible to just create a new "head", which essentially means "just start coding off tip and commit".  The ``wipshort`` alias provides a view of the repository that allows for keeping track of the work.
-
-.. TODO add wipshort alias
+.. FIXME: wording
+.. FIXME: include link to https://mozilla-version-control-tools.readthedocs.io/en/latest/hgmozilla/workflows.html#to-label-or-not-to-label ?
 
 ***************
 Getting Started
 ***************
 
-Style 1: One bookmark per review
-================================
+Style 1: One review per head
+============================
 
-In this style we use GitHub-style fix-up commits under a single bookmark.  The fix-ups will be squashed into a single commit before landing.
+In this style we use GitHub-style fix-up commits under a single head.  The fix-ups will be squashed into a single commit before landing.
 
 We'll use:
-* One bookmark
-* One review per bookmark
-* Multiple fix-up commits
+* One review
+* Multiple fix-up commits under one head
 
 Fixing the code
 ---------------
@@ -46,39 +35,35 @@ Let's start with a clean checkout.
 
 ::
 
-  $ hg wipshort
+  $ hg wip
   @  5865 tip @ autoland: configure lando s3 bucket (bug 1448051).
   |
   ~
 
-  $ hg bookmark fix-docstring
   $ vim pylib/mozautomation/mozautomation/commitparser.py
   $ hg status
   M pylib/mozautomation/mozautomation/commitparser.py
 
 Make sure our commit message is well-formatted.
 
-  * `Here is how to write a good commit message <https://chris.beams.io/posts/git-commit/#why-not-how>`_
-  * We do not need a bug number or "r?" reviewers list [FIXME check this]
-  * The component name is not needed for Firefox [FIXME check this]
+  * We do not need a bug number or "r?" reviewers list
 
 ::
 
   $ hg commit
-  mozautomation: fix pep8 lint
+  Fix pep8 lint
 
   Fix some PEP 8 lint in the module level docstrings.
 
-Oops, we found a second file to update.  We can add a fix-up commit to the bookmark that adds the new changes.
+Oops, we found a second file to update.  We can add a fix-up commit to the head that adds the new changes.
 
 ::
 
   $ vim pylib/mozautomation/mozautomation/treestatus.py
   $ hg commit -m 'docstring for the treestatus module'
-  $ hg wipshort
-
-  @  5871 tip fix-docstring docstring for the treestatus module
-  o  5870 mozautomation: fix pep8 lint
+  $ hg wip
+  @  5871 tip docstring for the treestatus module
+  o  5870 Fix pep8 lint
   o  5865 @ autoland: configure lando s3 bucket (bug 1448051).
   o  5864 hgmo: upgrade ZooKeeper to 3.4.11 (bug 1434339) r=sheehan
   o  5863 autoland: configure lando pingback url (bug 1445567) (fixup)
@@ -105,7 +90,7 @@ We need to include:
 ::
 
   $ arc diff
-  mozautomation: fix pep8 lint
+  Fix pep8 lint
 
   Summary:
 
@@ -125,7 +110,7 @@ We need to include:
   # Included commits in branch default:
   #
   #         153ddf055585 docstring for the treestatus module
-  #         c7ab40d66585 mozautomation: fix pep8 lint
+  #         c7ab40d66585 Fix pep8 lint
   #
   # arc could not identify any existing revision in your working copy.
   # If you intended to update an existing revision, use:
@@ -140,17 +125,26 @@ Our reviewers came back with some changes.  Let's add some fix-up commits for th
 
 ::
 
-  $ hg checkout fix-docstring
+  $ hg wip
+  o  5871 tip docstring for the treestatus module
+  o  5870 Fix pep8 lint
+  @  5865 @ autoland: configure lando s3 bucket (bug 1448051).
+
+  $ hg checkout 5871
   $ vim pylib/mozautomation/mozautomation/treestatus.py
   $ hg commit -m 'fix lint'
 
-Phabricator has a neat trick where you can check the 'Done' button in the review at the same time as fixing the commit.  The next time you put your changes up for review with ``arc diff``, Phabricator will automagically submit your 'Done' items and bundle them into a nice summary.
+Check off the Done item in the UI.
 
-.. TODO Screenshot of Done item
+[TODO screenshot of Done item]
+
+Now run ``arc diff``.  Phabrictor will automatically submit your Done items in the UI and create a nicely formatted update.
 
 ::
 
   $ arc diff
+
+[TODO] screenshot of revision update
 
 Landing the changes
 -------------------
@@ -169,9 +163,7 @@ We'll check that there are no conflicting changes upstream.
 
   $ hg pull --rebase
 
-``arc land`` is going to squash our bookmark into a single commit before adding the changes to mainline. The Phabricator review fields will become the commit message.
-
-.. TODO checking for "\bwip\b" in the commit message would make a good lint extension to 'arc land'
+``arc land`` is going to squash our changes into a single commit before adding the changes to mainline. The Phabricator review fields will become the commit message.
 
 **NOTE** Make sure you remove any "WIP not ready yet" stuff from the review summary before running ``arc land``!
 
@@ -228,8 +220,8 @@ When it's time to address feedback we use ``hg amend``.
 
 ::
 
-    $ hg wipshort
-    o  5870 tip mozautomation: fix pep8 lint
+    $ hg wip
+    o  5870 tip Fix pep8 lint
     @  5865 @ autoland: configure lando s3 bucket (bug 1448051).
     o  5864 hgmo: upgrade ZooKeeper to 3.4.11 (bug 1434339) r=sheehan
     o  5863 autoland: configure lando pingback url (bug 1445567) (fixup)
@@ -280,7 +272,7 @@ First we'll submit part 1 for review.  Start with a clean branch.
 
 ::
 
-  $ hg wipshort
+  $ hg wip
   @  4815 tip @ Bug 1309644 - Adding Kyle Machulis to WebIDL DOM Peer Hook; r=ted
   |
   ~
@@ -302,7 +294,7 @@ First we'll submit part 1 for review.  Start with a clean branch.
   There was a thing that was broken, because we assumed apples, but there were
   actually oranges.  Switch over to oranges.
 
-  $ hg wipshort
+  $ hg wip
   @  4816 tip mozreview: Fix that broken thing
   o  4815 @ Bug 1309644 - Adding Kyle Machulis to WebIDL DOM Peer Hook; r=ted
   |
@@ -319,7 +311,7 @@ First we'll submit part 1 for review.  Start with a clean branch.
 
   Ensure we use oranges instead of apples when doing that thing.
 
-  $ hg wipshort
+  $ hg wip
   @  4817 tip mozreview: mozreview: Add test for apples/oranges
   o  4816 mozreview: Fix that broken thing
   o  4815 @ Bug 1309644 - Adding Kyle Machulis to WebIDL DOM Peer Hook; r=ted
@@ -337,7 +329,7 @@ Oops, while working on the tests I found an issue with a change, let's fix that.
 
 ::
 
-  $ hg wipshort
+  $ hg wip
   @  4817 tip mozreview: mozreview: Add test for apples/oranges
   o  4816 mozreview: Fix that broken thing
   o  4815 @ Bug 1309644 - Adding Kyle Machulis to WebIDL DOM Peer Hook; r=ted
@@ -345,7 +337,7 @@ Oops, while working on the tests I found an issue with a change, let's fix that.
   ~
   $ hg co 4816
   1 files updated, 0 files merged, 0 files removed, 0 files unresolved
-  $ hg wipshort
+  $ hg wip
   o  4817 tip mozreview: mozreview: Add test for apples/oranges
   @  4816 mozreview: Fix that broken thing
   o  4815 @ Bug 1309644 - Adding Kyle Machulis to WebIDL DOM Peer Hook; r=ted
@@ -364,11 +356,11 @@ Oops, while working on the tests I found an issue with a change, let's fix that.
   $ hg amend
   1 new unstable changesets
 
-* ``wipshort`` shows that the ``amend`` has orphaned all children of the amended revision (4817 in this example)
+* ``wip`` shows that the ``amend`` has orphaned all children of the amended revision (4817 in this example)
 
 ::
 
-  $ hg wipshort
+  $ hg wip
   @  4819 tip mozreview: Fix that broken thing
   | o  4817 mozreview: mozreview: Add test for apples/oranges
   | x  4816 mozreview: Fix that broken thing
@@ -383,7 +375,7 @@ Oops, while working on the tests I found an issue with a change, let's fix that.
 
   $ hg rebase -s 4817 -d 4819
   rebasing 4817:32d34909fb2f "mozreview: mozreview: Add test for apples/oranges"
-  $ hg wipshort
+  $ hg wip
   o  4820 tip mozreview: mozreview: Add test for apples/oranges
   @  4819 mozreview: Fix that broken thing
   o  4815 @ Bug 1309644 - Adding Kyle Machulis to WebIDL DOM Peer Hook; r=ted
@@ -403,7 +395,7 @@ We need to check out each individual changeset and submit it.
 
 ::
 
-  $ hg wipshort
+  $ hg wip
   o  4820 tip mozreview: mozreview: Add test for apples/oranges
   @  4819 mozreview: Fix that broken thing
   o  4815 @ Bug 1309644 - Adding Kyle Machulis to WebIDL DOM Peer Hook; r=ted
