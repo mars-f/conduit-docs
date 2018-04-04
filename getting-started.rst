@@ -211,7 +211,7 @@ When it's time to address feedback we use ``hg amend``.
     o  5863 autoland: configure lando pingback url (bug 1445567) (fixup)
     |
 
-    $ hg checkout tip
+    $ hg checkout 5870
 
     $ vim pylib/mozautomation/mozautomation/commitparser.py
 
