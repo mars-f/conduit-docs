@@ -149,31 +149,10 @@ Now run ``arc diff``.  Phabrictor will automatically submit your Done items in t
 Landing the changes
 -------------------
 
-.. FIXME Lando?
-
 Everything looks good, let's land our changes in mainline.
 
-::
-
-  $ hg checkout fix-docstring
-
-We'll check that there are no conflicting changes upstream.
-
-::
-
-  $ hg pull --rebase
-
-``arc land`` is going to squash our changes into a single commit before adding the changes to mainline. The Phabricator review fields will become the commit message.
-
-**NOTE** Make sure you remove any "WIP not ready yet" stuff from the review summary before running ``arc land``!
-
-* If you want to check what commit message ``arc land`` is going to use, you can run ``arc amend`` to update your local changeset's commit message to match Phabricator.
-
-::
-
-  $ arc land
-
-.. FIXME ^ should that use lando instead?  maybe keep command for branches not in mozilla-central.
+[TODO requesting landing of your changes into FF - link?]
+[TODO Lando]
 
 
 Style 2: One changeset per review
