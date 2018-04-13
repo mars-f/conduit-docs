@@ -25,6 +25,7 @@ Style 1: One review per head
 In this style we use GitHub-style fix-up commits under a single head.  The fix-ups will be squashed into a single commit before landing.
 
 We'll use:
+
 * One review
 * Multiple fix-up commits under one head
 
@@ -46,7 +47,7 @@ Let's start with a clean checkout.
 
 Make sure our commit message is well-formatted.
 
-  * We do not need a bug number or "r?" reviewers list
+* We do not need a bug number or "r?" reviewers list
 
 ::
 
@@ -161,6 +162,7 @@ Style 2: One changeset per review
 In this style we craft just one commit per review.  When we get feedback or fixups we amend our single commit.
 
 We'll use:
+
 * One commit
 * One review per commit
 * ``hg amend`` to add fix-ups to our commit
@@ -199,7 +201,7 @@ Let's start with a clean checkout.
 
 Make sure our commit message is well-formatted.
 
-  * We do not need a bug number or "r?" reviewers list
+* We do not need a bug number or "r?" reviewers list
 
 ::
 
@@ -225,6 +227,32 @@ We need to include:
 ::
 
     $ arc diff
+    Fix pep8 lint
+
+    Summary:
+
+    Fix some PEP 8 lint in the module level docstrings.
+
+    Test Plan: $ pep8 thefiles
+
+    Reviewers: glob, imadueme
+
+    Subscribers:
+
+    Bug #: 5556555
+
+    # NEW DIFFERENTIAL REVISION
+    # Describe the changes in this new revision.
+    #
+    # Included commits in branch default:
+    #
+    #         153ddf055585 docstring for the treestatus module
+    #         c7ab40d66585 Fix pep8 lint
+    #
+    # arc could not identify any existing revision in your working copy.
+    # If you intended to update an existing revision, use:
+    #
+    #   $ arc diff --update <revision>
 
 
 Addressing feedback
@@ -232,7 +260,7 @@ Addressing feedback
 
 When it's time to address feedback we use ``hg amend``.
 
-  * ``hg commit --amend`` also works, and allows you to update the commit description while amending the commit
+* ``hg commit --amend`` also works, and allows you to update the commit description while amending the commit
 
 ::
 
@@ -362,7 +390,7 @@ Oops, while working on the tests I found an issue with a change, let's fix that.
 
 * Make the changes, and ``amend``
 
-  * ``hg commit --amend`` also works, and allows you to update the commit description while amending the commit
+* ``hg commit --amend`` also works, and allows you to update the commit description while amending the commit
 
 ::
 
