@@ -183,20 +183,52 @@ Let's change the setting for just this project.
 Fixing the code
 ---------------
 
-Everything for pushing up a single commit change is the same as if we used a bookmark.
+Let's start with a clean checkout.
 
 ::
+
+    $ hg wip
+    @  5865 tip @ autoland: configure lando s3 bucket (bug 1448051).
+    |
+    ~
 
     $ vim pylib/mozautomation/mozautomation/commitparser.py
 
     $ hg status
     M pylib/mozautomation/mozautomation/commitparser.py
 
+Make sure our commit message is well-formatted.
+
+  * We do not need a bug number or "r?" reviewers list
+
+::
+
     $ hg commit
+
+Requesting a Review
+-------------------
+
+Before we request a review we should check for changes upstream.
+
+::
 
     $ hg pull --rebase
 
+* If you want to look before you leap in with ``arc diff`` or ``arc land``, you can run ``arc which`` to get a description of what ``arc`` is going to do next.
+
+We need to include:
+
+* An real BMO Bug #
+* Reviewers
+* A Test Plan, even if it is just the string 'n/a'
+
+::
+
     $ arc diff
+
+
+Addressing feedback
+-------------------
 
 When it's time to address feedback we use ``hg amend``.
 
@@ -225,7 +257,7 @@ Stacked changes with evolve
 
 .. TODO link to main phabricator doc about this?
 .. TODO maybe remove the evolve extension reference.  smacleod says it's iffy to support because it's still experimental.
-
+.. TODO maybe adapt workflow based on smacleod's blog post: https://smacleod.ca/posts/commit-series-with-phabricator/
 
 Let's make a complex fix that would be easier to review if it were split into two parts.
 
@@ -309,7 +341,7 @@ Updating Commits
 
 Oops, while working on the tests I found an issue with a change, let's fix that.
 
-* First, `checkout` the revision that needs to be updated
+* First, ``checkout`` the revision that needs to be updated
 
 ::
 
