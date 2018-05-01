@@ -133,11 +133,15 @@ Our reviewers came back with some changes.  Let's add some fix-up commits for th
 
   $ hg checkout 5871
   $ vim pylib/mozautomation/mozautomation/treestatus.py
+  # hack hack
   $ hg commit -m 'fix lint'
 
-Check off the Done item in the UI.
 
-[TODO screenshot of Done item]
+Check off the Done item in the Phabricator UI.
+
+.. image:: images/review-item-done.png
+   :align: center
+   :alt: Screenshot of a Done review item
 
 Now run ``arc diff``.  Phabrictor will automatically submit your Done items in the UI and create a nicely formatted update.
 
@@ -145,15 +149,31 @@ Now run ``arc diff``.  Phabrictor will automatically submit your Done items in t
 
   $ arc diff
 
-[TODO] screenshot of revision update
+.. image:: images/done-items-update.png
+   :align: center
+   :alt: Screenshot of a revision history update after pushing updates
+
 
 Landing the changes
 -------------------
 
-Everything looks good, let's land our changes in mainline.
+Everything looks good, the reviewers have approved our changes.  Let's land our changes in mainline.
 
-[TODO requesting landing of your changes into FF - link?]
-[TODO Lando]
+On your revision page in Phabricator click the "View in Lando" link in the right-hand menu:
+
+.. image:: images/view-in-lando.png
+   :align: center
+   :alt: Screenshot of a Phabricator Revision ready to land with Lando
+
+
+You will be taken to the Lando revision overview page.  Give the change one last review, double-check the commit message, etc., before hitting the "Land" button.
+
+.. image:: images/lando-land-it.png
+   :align: center
+   :alt: Screenshot of a revision in Lando that is ready to land
+
+Hit the "Land" button and Lando will automatically commit your changes to mainline.
+
 
 
 Style 2: One changeset per review
@@ -272,10 +292,47 @@ When it's time to address feedback we use ``hg amend``.
     |
 
     $ hg checkout 5870
-
     $ vim pylib/mozautomation/mozautomation/commitparser.py
-
+    # hack hack
     $ hg amend
 
+
+Check off the Done item in the Phabricator UI.
+
+.. image:: images/review-item-done.png
+   :align: center
+   :alt: Screenshot of a Done review item
+
+
+Now run ``arc diff``.  Phabrictor will automatically submit your Done items in the UI and create a nicely formatted update.
+
+::
+
     $ arc diff
+
+.. image:: images/done-items-update.png
+   :align: center
+   :alt: Screenshot of a revision history update after pushing updates
+
+
+Landing the changes
+-------------------
+
+Everything looks good, the reviewers have approved our changes.  Let's land our changes in mainline.
+
+On your revision page in Phabricator click the "View in Lando" link in the right-hand menu:
+
+.. image:: images/view-in-lando.png
+   :align: center
+   :alt: Screenshot of a Phabricator Revision ready to land with Lando
+
+
+You will be taken to the Lando revision overview page.  Give the change one last review, double-check the commit message, etc., before hitting the "Land" button.
+
+.. image:: images/lando-land-it.png
+   :align: center
+   :alt: Screenshot of a revision in Lando that is ready to land
+
+Hit the "Land" button and Lando will automatically commit your changes to mainline.
+
 
