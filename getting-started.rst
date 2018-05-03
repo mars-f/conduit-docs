@@ -47,7 +47,7 @@ Let's start with a clean checkout.
 
 Make sure our commit message is well-formatted.
 
-* We do not need a bug number or "r?" reviewers list
+* We do not need a bug number or "r?" reviewers list.  Lando will add this automatically.
 
 ::
 
@@ -84,9 +84,10 @@ Before we request a review we should check for changes upstream.
 
 We need to include:
 
-* An real BMO Bug #
+* A real BMO Bug #
 * Reviewers
-* A Test Plan, even if it is just the string 'n/a'
+
+The Summary, Test Plan, and Subscribers sections are optional.
 
 ::
 
@@ -157,7 +158,7 @@ Now run ``arc diff``.  Phabrictor will automatically submit your Done items in t
 Landing the changes
 -------------------
 
-Everything looks good, the reviewers have approved our changes.  Let's land our changes in mainline.
+Everything looks good: the reviewers have approved our changes.  Let's land our changes in mainline.
 
 On your revision page in Phabricator click the "View in Lando" link in the right-hand menu:
 
@@ -184,22 +185,8 @@ In this style we craft just one commit per review.  When we get feedback or fixu
 We'll use:
 
 * One commit
-* One review per commit
+* One review request per commit
 * ``hg amend`` to add fix-ups to our commit
-
-
-Telling arc to make one review per changeset
---------------------------------------------
-
-First we need to tell the ``arc diff`` command to only submit the current changeset for review.
-
-Let's change the setting for just this project.
-
-::
-
-    $ arc set-config --local base 'arc:this, arc:prompt'
-
-* NOTE: If you want to change this setting for all projects under your login, remove the ``--local`` switch.
 
 
 Fixing the code
@@ -221,7 +208,7 @@ Let's start with a clean checkout.
 
 Make sure our commit message is well-formatted.
 
-* We do not need a bug number or "r?" reviewers list
+* We do not need a bug number or "r?" reviewers list.  Lando will add this automatically.
 
 ::
 
@@ -240,9 +227,10 @@ Before we request a review we should check for changes upstream.
 
 We need to include:
 
-* An real BMO Bug #
+* A real BMO Bug #
 * Reviewers
-* A Test Plan, even if it is just the string 'n/a'
+
+The Summary, Test Plan, and Subscribers sections are optional.
 
 ::
 
@@ -318,7 +306,7 @@ Now run ``arc diff``.  Phabrictor will automatically submit your Done items in t
 Landing the changes
 -------------------
 
-Everything looks good, the reviewers have approved our changes.  Let's land our changes in mainline.
+Everything looks good: the reviewers have approved our changes.  Let's land our changes in mainline.
 
 On your revision page in Phabricator click the "View in Lando" link in the right-hand menu:
 
